@@ -1,80 +1,79 @@
-organization_name	domain	sector
-"Department of Agriculture, Food and the Marine"	agriculture.gov.ie	Central Government
-"Department of Children, Disability and Equality"	equality.gov.ie	Central Government
-"Department of Climate, Energy and the Environment"	decc.gov.ie	Central Government
-"Department of Culture, Communications and Sport"	ccs.gov.ie	Central Government
-Department of Defence	defence.ie	Central Government
-Department of Education and Youth	education.gov.ie	Central Government
-"Department of Enterprise, Tourism and Employment"	enterprise.gov.ie	Central Government
-Department of Finance	finance.gov.ie	Central Government
-Department of Foreign Affairs and Trade	dfa.ie	Central Government
-"Department of Further and Higher Education, Research, Innovation and Science"	dfheris.gov.ie	Central Government
-Department of Health	health.gov.ie	Central Government
-"Department of Housing, Local Government and Heritage"	housing.gov.ie	Central Government
-"Department of Justice, Home Affairs and Migration"	justice.ie	Central Government
-"Department of Public Expenditure, Infrastructure, Public Service Reform and Digitalisation"	per.gov.ie	Central Government
-Department of Rural and Community Development and the Gaeltacht	drcd.gov.ie	Central Government
-Department of Social Protection	welfare.ie	Central Government
-Department of the Taoiseach	taoiseach.gov.ie	Central Government
-Department of Transport	transport.gov.ie	Central Government
-Carlow County Council	carlowcoco.ie	Local Government
-Cavan County Council	cavancoco.ie	Local Government
-Clare County Council	clarecoco.ie	Local Government
-Cork City Council	corkcity.ie	Local Government
-Cork County Council	corkcoco.ie	Local Government
-Donegal County Council	donegalcoco.ie	Local Government
-Dublin City Council	dublincity.ie	Local Government
-Dún Laoghaire-Rathdown County Council	dlrcoco.ie	Local Government
-Fingal County Council	fingal.ie	Local Government
-Galway City Council	galwaycity.ie	Local Government
-Galway County Council	galwaycoco.ie	Local Government
-Kerry County Council	kerrycoco.ie	Local Government
-Kildare County Council	kildarecoco.ie	Local Government
-Kilkenny County Council	kilkennycoco.ie	Local Government
-Laois County Council	laoiscoco.ie	Local Government
-Leitrim County Council	leitrimcoco.ie	Local Government
-Limerick City and County Council	limerick.ie	Local Government
-Longford County Council	longfordcoco.ie	Local Government
-Louth County Council	louthcoco.ie	Local Government
-Mayo County Council	mayococo.ie	Local Government
-Meath County Council	meathcoco.ie	Local Government
-Monaghan County Council	monaghancoco.ie	Local Government
-Offaly County Council	offalycoco.ie	Local Government
-Roscommon County Council	roscommoncoco.ie	Local Government
-Sligo County Council	sligococo.ie	Local Government
-South Dublin County Council	sdublincoco.ie	Local Government
-Tipperary County Council	tipperarycoco.ie	Local Government
-Waterford City and County Council	waterfordcouncil.ie	Local Government
-Westmeath County Council	westmeathcoco.ie	Local Government
-Wexford County Council	wexfordcoco.ie	Local Government
-Wicklow County Council	wicklowcoco.ie	Local Government
-Atlantic Technological University	atu.ie	Education
-Dublin City University	dcu.ie	Education
-"Dun Laoghaire Institute of Art, Design and Technology"	iadt.ie	Education
-Dundalk Institute of Technology	dkit.ie	Education
-Mary Immaculate College	mic.ul.ie	Education
-Maynooth University	mu.ie	Education
-Munster Technological University	mtu.ie	Education
-National College of Art & Design	ncad.ie	Education
-Royal College of Surgeons in Ireland	rcsi.ie	Education
-South East Technological University	setu.ie	Education
-Technological University Dublin	tudublin.ie	Education
-Technological University of the Shannon	tus.ie	Education
-Trinity College Dublin	tcd.ie	Education
-University College Cork	ucc.ie	Education
-University College Dublin	ucd.ie	Education
-University of Galway	universityofgalway.ie	Education
-University of Limerick	ul.ie	Education
-Health Service Executive	hse.ie	Health
-An Garda Síochána	garda.ie	Law Enforcement
-An Post	anpost.com	State-Owned Enterprise
-Electricity Supply Board	esb.ie	Energy
-EirGrid	eirgrid.ie	Energy
-Central Bank of Ireland	centralbank.ie	Financial Regulation
-Health Information and Quality Authority	hiqa.ie	Health
-Mater Misericordiae University Hospital	mater.ie	Health
-St. James's Hospital	stjames.ie	Health
-Beaumont Hospital	beaumont.ie	Health
-Commission for Communications Regulation	comreg.ie	Regulation
-National Standards Authority of Ireland	nsai.ie	Standards/Regulation
-Office of Emergency Planning	oep.gov.ie	Emergency Planning
+organization_name,domain,sector
+"Department of Agriculture, Food and the Marine",agriculture.gov.ie,Central Government
+"Department of Children, Disability and Equality",dcde.gov.ie,Central Government
+"Department of Climate, Energy and the Environment",dcee.gov.ie,Central Government
+"Department of Culture, Communications and Sport",ccs.gov.ie,Central Government
+Department of Defence,defence.ie,Central Government
+Department of Education and Youth,education.gov.ie,Central Government
+"Department of Enterprise, Tourism and Employment",enterprise.gov.ie,Central Government
+Department of Finance,finance.gov.ie,Central Government
+Department of Foreign Affairs and Trade,dfa.ie,Central Government
+"Department of Further and Higher Education, Research, Innovation and Science",dfheris.gov.ie,Central Government
+Department of Health,health.gov.ie,Central Government
+"Department of Housing, Local Government and Heritage",housing.gov.ie,Central Government
+"Department of Justice, Home Affairs and Migration",justice.ie,Central Government
+"Department of Public Expenditure, Infrastructure, Public Service Reform and Digitalisation",per.gov.ie,Central Government
+Department of Rural and Community Development and the Gaeltacht,drcdg.gov.ie,Central Government
+Department of Social Protection,welfare.ie,Central Government
+Department of the Taoiseach,taoiseach.gov.ie,Central Government
+Department of Transport,transport.gov.ie,Central Government
+Carlow County Council,carlowcoco.ie,Local Government
+Cavan County Council,cavancoco.ie,Local Government
+Clare County Council,clarecoco.ie,Local Government
+Cork City Council,corkcity.ie,Local Government
+Cork County Council,corkcoco.ie,Local Government
+Donegal County Council,donegalcoco.ie,Local Government
+Dublin City Council,dublincity.ie,Local Government
+Dún Laoghaire-Rathdown County Council,dlrcoco.ie,Local Government
+Fingal County Council,fingal.ie,Local Government
+Galway City Council,galwaycity.ie,Local Government
+Galway County Council,galwaycoco.ie,Local Government
+Kerry County Council,kerrycoco.ie,Local Government
+Kildare County Council,kildarecoco.ie,Local Government
+Kilkenny County Council,kilkennycoco.ie,Local Government
+Laois County Council,laoiscoco.ie,Local Government
+Leitrim County Council,leitrimcoco.ie,Local Government
+Limerick City and County Council,limerick.ie,Local Government
+Longford County Council,longfordcoco.ie,Local Government
+Louth County Council,louthcoco.ie,Local Government
+Mayo County Council,mayococo.ie,Local Government
+Meath County Council,meathcoco.ie,Local Government
+Monaghan County Council,monaghancoco.ie,Local Government
+Offaly County Council,offalycoco.ie,Local Government
+Roscommon County Council,roscommoncoco.ie,Local Government
+Sligo County Council,sligococo.ie,Local Government
+South Dublin County Council,sdublincoco.ie,Local Government
+Tipperary County Council,tipperarycoco.ie,Local Government
+Waterford City and County Council,waterfordcouncil.ie,Local Government
+Westmeath County Council,westmeathcoco.ie,Local Government
+Wexford County Council,wexfordcoco.ie,Local Government
+Wicklow County Council,wicklowcoco.ie,Local Government
+Atlantic Technological University,atu.ie,Education
+Dublin City University,dcu.ie,Education
+"Dun Laoghaire Institute of Art, Design and Technology",iadt.ie,Education
+Dundalk Institute of Technology,dkit.ie,Education
+Mary Immaculate College,mic.ul.ie,Education
+Maynooth University,mu.ie,Education
+Munster Technological University,mtu.ie,Education
+National College of Art & Design,ncad.ie,Education
+Royal College of Surgeons in Ireland,rcsi.ie,Education
+South East Technological University,setu.ie,Education
+Technological University Dublin,tudublin.ie,Education
+Technological University of the Shannon,tus.ie,Education
+Trinity College Dublin,tcd.ie,Education
+University College Cork,ucc.ie,Education
+University College Dublin,ucd.ie,Education
+University of Galway,universityofgalway.ie,Education
+University of Limerick,ul.ie,Education
+Health Service Executive,hse.ie,Health
+An Garda Síochána,garda.ie,Law Enforcement
+An Post,anpost.ie,State-Owned Enterprise
+Electricity Supply Board,esb.ie,Energy
+EirGrid,eirgrid.com,Energy
+Central Bank of Ireland,centralbank.ie,Financial Regulation
+Health Information and Quality Authority,hiqa.ie,Health
+Mater Misericordiae University Hospital,mater.ie,Health
+St. James's Hospital,stjames.ie,Health
+Beaumont Hospital,beaumont.ie,Health
+Commission for Communications Regulation,comreg.ie,Regulation
+National Standards Authority of Ireland,nsai.ie,Standards/Regulation

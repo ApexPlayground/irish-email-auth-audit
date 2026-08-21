@@ -1,28 +1,36 @@
 import csv
 import time
 
-from dns_query import get_spf_record, get_dmarc_record
+from dns_query import get_spf_record, get_dmarc_record, get_dkim_record
 from spf import score_spf
 from dmarc import score_dmarc
+from dkim import score_dkim
 
 INPUT_FILE = "domains.csv"
 OUTPUT_FILE = "results.csv"
-DELAY_SECONDS = 0.5
+DELAY_SECONDS = 0.5  # avoid hammering DNS servers
 
 FIELDNAMES = [
     "organization_name", "domain", "sector",
+
     "spf_status", "spf_record",
     "spf_qualifier", "spf_qualifier_score",
     "spf_lookup_count", "spf_lookup_exceeds_limit",
+
     "dmarc_status", "dmarc_record",
     "dmarc_policy", "dmarc_policy_score",
     "dmarc_subdomain_policy", "dmarc_pct",
     "dmarc_reporting_configured", "dmarc_forensic_reporting_configured",
     "dmarc_alignment_spf", "dmarc_alignment_dkim",
+
+    "dkim_status", "dkim_selector", "dkim_record",
+    "dkim_key_type", "dkim_key_bits", "dkim_key_length_score",
+    "dkim_revoked", "dkim_testing_mode",
 ]
 
 
 def load_domains(path):
+    # excel/sheets exports sometimes come out tab-delimited even with a .csv extension
     with open(path, newline="", encoding="utf-8-sig") as f:
         sample = f.read(2048)
         f.seek(0)
@@ -38,47 +46,45 @@ def load_domains(path):
     return rows
 
 
+def audit(row):
+    domain = row["domain"]
+
+    spf = get_spf_record(domain)
+    dmarc = get_dmarc_record(domain)
+    dkim = get_dkim_record(domain)
+
+    print(f"spf={spf['status']} dmarc={dmarc['status']} dkim={dkim['status']}")
+
+    result = {
+        "organization_name": row["organization_name"],
+        "domain": domain,
+        "sector": row["sector"],
+        "spf_status": spf["status"],
+        "spf_record": spf["record"],
+        "dmarc_status": dmarc["status"],
+        "dmarc_record": dmarc["record"],
+        "dkim_status": dkim["status"],
+        "dkim_selector": dkim["selector"],
+        "dkim_record": dkim["record"],
+    }
+
+    # each scorer returns unprefixed keys, so prefix them to match FIELDNAMES
+    for prefix, scored in (("spf", score_spf(spf["record"])),
+                           ("dmarc", score_dmarc(dmarc["record"])),
+                           ("dkim", score_dkim(dkim["record"]))):
+        result.update({f"{prefix}_{k}": v for k, v in scored.items()})
+
+    return result
+
+
 def main():
     domains = load_domains(INPUT_FILE)
     print(f"Loaded {len(domains)} domains from {INPUT_FILE}")
 
     results = []
     for i, row in enumerate(domains, start=1):
-        domain = row["domain"]
-        print(f"[{i}/{len(domains)}] {domain} ...", end=" ")
-
-        spf = get_spf_record(domain)
-        dmarc = get_dmarc_record(domain)
-        print(f"spf={spf['status']} dmarc={dmarc['status']}")
-
-        spf_scored = score_spf(spf["record"])
-        dmarc_scored = score_dmarc(dmarc["record"])
-
-        spf_unmeasured = spf_scored["qualifier_score"] is None  # blank out, don't score as worst-case
-        dmarc_unmeasured = dmarc_scored["policy_score"] is None
-
-        results.append({
-            "organization_name": row["organization_name"],
-            "domain": domain,
-            "sector": row["sector"],
-            "spf_status": spf["status"],
-            "spf_record": spf["record"] or "",
-            "spf_qualifier": spf_scored["qualifier"] or "",
-            "spf_qualifier_score": "" if spf_unmeasured else spf_scored["qualifier_score"],
-            "spf_lookup_count": "" if spf_unmeasured else spf_scored["lookup_count"],
-            "spf_lookup_exceeds_limit": "" if spf_unmeasured else spf_scored["lookup_exceeds_limit"],
-            "dmarc_status": dmarc["status"],
-            "dmarc_record": dmarc["record"] or "",
-            "dmarc_policy": dmarc_scored["policy"] or "",
-            "dmarc_policy_score": "" if dmarc_unmeasured else dmarc_scored["policy_score"],
-            "dmarc_subdomain_policy": "" if dmarc_unmeasured else dmarc_scored["subdomain_policy"],
-            "dmarc_pct": "" if dmarc_unmeasured else dmarc_scored["pct"],
-            "dmarc_reporting_configured": "" if dmarc_unmeasured else dmarc_scored["reporting_configured"],
-            "dmarc_forensic_reporting_configured": "" if dmarc_unmeasured else dmarc_scored["forensic_reporting_configured"],
-            "dmarc_alignment_spf": "" if dmarc_unmeasured else dmarc_scored["alignment_spf"],
-            "dmarc_alignment_dkim": "" if dmarc_unmeasured else dmarc_scored["alignment_dkim"],
-        })
-
+        print(f"[{i}/{len(domains)}] {row['domain']} ...", end=" ")
+        results.append(audit(row))
         time.sleep(DELAY_SECONDS)
 
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
@@ -88,13 +94,12 @@ def main():
 
     print(f"\nDone. Wrote {len(results)} rows to {OUTPUT_FILE}")
 
-    for label, key in [("SPF", "spf_status"), ("DMARC", "dmarc_status")]:
-        print(f"\n{label}:")
+    for label, key in (("SPF", "spf_status"), ("DMARC", "dmarc_status"), ("DKIM", "dkim_status")):
         statuses = [r[key] for r in results]
+        print(f"\n{label} status breakdown:")
         for status in ("found", "not_published", "nxdomain", "timeout", "error"):
-            count = statuses.count(status)
-            if count:
-                print(f"  {status}: {count}")
+            if statuses.count(status):
+                print(f"  {status}: {statuses.count(status)}")
 
 
 if __name__ == "__main__":

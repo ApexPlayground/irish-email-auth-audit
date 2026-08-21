@@ -1,62 +1,60 @@
 from typing import NamedTuple
 import time
-import dns.resolver
+import requests
 
-NAMESERVER_SETS = [
-    ["8.8.8.8", "8.8.4.4"],
-    ["1.1.1.1", "1.0.0.1"],
+DOH_TIMEOUT = 8
+
+DOH_PROVIDERS = [
+    ("google", "https://dns.google/resolve", {}),
+    ("cloudflare", "https://cloudflare-dns.com/dns-query",
+     {"accept": "application/dns-json"}),
 ]
 
-MAX_RETRIES = 1
-RETRY_DELAY = 1
-TIMEOUT = 4
-LIFETIME = 6
+# There is no way to enumerate the _domainkey namespace, so DKIM records are
+# found by trying the defaults of the major providers and common conventions.
+SELECTORS = [
+    "google", "selector1", "selector2", "k1", "k2", "default",
+    "dkim", "mail", "smtp", "s1", "s2", "litesrv", "mailjet",
+]
 
 
 class TxtResult(NamedTuple):
-    answers: object
+    strings: list
     status: str
 
 
-def _make_resolver(nameservers):
-    r = dns.resolver.Resolver()
-    r.nameservers = nameservers
-    r.timeout = TIMEOUT
-    r.lifetime = LIFETIME
-    return r
-
-
 def _resolve_txt(query_name):
-    # tries each resolver set in turn before giving up as "timeout"
-    for nameservers in NAMESERVER_SETS:
-        resolver = _make_resolver(nameservers)
-        for attempt in range(MAX_RETRIES + 1):
-            try:
-                answers = resolver.resolve(query_name, "TXT")
-                return TxtResult(answers, "ok")
-            except dns.resolver.NXDOMAIN:
-                return TxtResult(None, "nxdomain")
-            except dns.resolver.NoAnswer:
-                return TxtResult(None, "not_published")
-            except (dns.exception.Timeout, dns.resolver.NoNameservers):
-                if attempt < MAX_RETRIES:
-                    time.sleep(RETRY_DELAY * (attempt + 1))
-                    continue
-                break
-            except Exception:
-                return TxtResult(None, "error")
-    return TxtResult(None, "timeout")
+    for _, url, headers in DOH_PROVIDERS:
+        try:
+            resp = requests.get(
+                url,
+                params={"name": query_name, "type": "TXT"},
+                headers=headers,
+                timeout=DOH_TIMEOUT,
+            )
+            data = resp.json()
+            status = data.get("Status", -1)
+
+            if status == 3:
+                return TxtResult([], "nxdomain")
+            if status != 0 or "Answer" not in data:
+                return TxtResult([], "not_published")
+
+            return TxtResult([a.get("data", "").strip('"') for a in data["Answer"]], "ok")
+
+        except Exception:
+            continue
+
+    return TxtResult([], "timeout")
 
 
 def _get_txt_record(query_name, prefix):
     result = _resolve_txt(query_name)
-
-    if result.status in ("nxdomain", "not_published", "timeout", "error"):
+    if result.status != "ok":
         return {"record": None, "status": result.status}
 
-    for rdata in result.answers:
-        txt = b"".join(rdata.strings).decode("utf-8", errors="ignore")
-        if txt.startswith(prefix):
+    for txt in result.strings:
+        if txt.lower().startswith(prefix.lower()):
             return {"record": txt, "status": "found"}
 
     return {"record": None, "status": "not_published"}
@@ -67,13 +65,21 @@ def get_spf_record(domain):
 
 
 def get_dmarc_record(domain):
-    # DMARC lives at _dmarc.<domain>, not the apex
     return _get_txt_record(f"_dmarc.{domain}", "v=DMARC1")
 
 
-if __name__ == "__main__":
-    for d in ["welfare.ie", "dcu.ie", "hse.ie"]:
-        r = get_spf_record(d)
-        print(f"SPF   {d}: [{r['status']}] {r['record']}")
-        r = get_dmarc_record(d)
-        print(f"DMARC {d}: [{r['status']}] {r['record']}")
+def get_dkim_record(domain, selectors=None):
+    for selector in selectors or SELECTORS:
+        result = _resolve_txt(f"{selector}._domainkey.{domain}")
+
+        if result.status == "ok":
+            for txt in result.strings:
+                if "v=dkim1" in txt.lower() or "p=" in txt.lower():
+                    return {"record": txt, "status": "found", "selector": selector}
+
+        elif result.status == "timeout":
+            return {"record": None, "status": "timeout", "selector": selector}
+
+        time.sleep(0.1)
+
+    return {"record": None, "status": "not_published", "selector": None}

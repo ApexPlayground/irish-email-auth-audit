@@ -1,3 +1,5 @@
+"""Parse and score DMARC policy records. Scoring follows RFC 7489 section 6.3."""
+
 import re
 
 POLICY_SCORES = {
@@ -17,7 +19,7 @@ def score_dmarc(record):
     if not record:
         return {
             "policy": None,
-            "policy_score": None,  # unmeasured, not the same as p=none
+            "policy_score": None,
             "subdomain_policy": None,
             "pct": None,
             "reporting_configured": False,
@@ -27,37 +29,18 @@ def score_dmarc(record):
         }
 
     tags = parse_tags(record)
-
     policy = tags.get("p")
-    policy_score = POLICY_SCORES.get(policy)
-    subdomain_policy = tags.get("sp", policy)  # sp= inherits p= when absent
-
     pct_raw = tags.get("pct", "100")
-    pct = int(pct_raw) if pct_raw.isdigit() else None
 
-    alignment_spf = tags.get("aspf", "r")
-    alignment_dkim = tags.get("adkim", "r")
-
+    # Defaults are what a receiver applies when the tag is absent:
+    # sp inherits p, pct is 100, alignment is relaxed.
     return {
         "policy": policy,
-        "policy_score": policy_score,
-        "subdomain_policy": subdomain_policy,
-        "pct": pct,
+        "policy_score": POLICY_SCORES.get(policy),
+        "subdomain_policy": tags.get("sp", policy),
+        "pct": int(pct_raw) if pct_raw.isdigit() else None,
         "reporting_configured": "rua" in tags,
         "forensic_reporting_configured": "ruf" in tags,
-        "alignment_spf": alignment_spf,
-        "alignment_dkim": alignment_dkim,
+        "alignment_spf": tags.get("aspf", "r"),
+        "alignment_dkim": tags.get("adkim", "r"),
     }
-
-
-if __name__ == "__main__":
-    tests = [
-        "v=DMARC1; p=reject; pct=100; rua=mailto:dmarc@example.gov.ie",
-        "v=DMARC1; p=quarantine; sp=reject; pct=50; rua=mailto:a@x.ie; ruf=mailto:b@x.ie; aspf=s; adkim=s",
-        "v=DMARC1; p=none",
-        None,
-    ]
-    for t in tests:
-        print(t)
-        print(score_dmarc(t))
-        print()
